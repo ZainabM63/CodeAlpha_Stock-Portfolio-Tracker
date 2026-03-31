@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, send_file
+from flask import Flask, render_template, request, redirect, send_file, make_response
 import csv
 import os
 
@@ -28,12 +28,11 @@ def index():
 
 @app.route('/add', methods=['POST'])
 def add_stock():
-    symbol = request.form.get('symbol')
-    quantity = int(request.form.get('quantity'))
-    price = STOCK_PRICES.get(symbol)
+    symbol = request.form.get('symbol', '')
+    quantity = int(request.form.get('quantity', 1))
+    price = STOCK_PRICES.get(symbol, 0)
     subtotal = quantity * price
 
-    # Save to CSV
     file_exists = os.path.isfile('portfolio.csv')
     with open('portfolio.csv', 'a', newline='') as f:
         writer = csv.writer(f)
@@ -41,7 +40,11 @@ def add_stock():
             writer.writerow(['Symbol', 'Quantity', 'Price', 'Total'])
         writer.writerow([symbol, quantity, price, subtotal])
     
-    return redirect('/')
+    response = make_response(redirect('/'))
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
 
 @app.route('/export')
 def export_csv():

@@ -3,7 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock Tracker Pro</title>
+    <title>Stock Portfolio Tracker</title>
+    <script>
+        async function addToPortfolio(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            
+            await fetch('/add', {
+                method: 'POST',
+                body: formData
+            });
+            
+            window.location.href = '/?t=' + Date.now();
+        }
+    </script>
     <style>
         @import url('https://googleapis.com');
 
@@ -83,7 +97,7 @@
         <h1>Stock Portfolio Tracker</h1>
         
         <!-- Input Form -->
-        <form action="/add" method="POST">
+        <form action="/add" method="POST" onsubmit="addToPortfolio(event)">
             <label>Select Asset</label>
             <select name="symbol">
                 {% for symbol, price in stocks.items() %}
