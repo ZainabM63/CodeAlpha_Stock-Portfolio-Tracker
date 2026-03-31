@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Tracker Pro</title>
+    <style>
+        @import url('https://googleapis.com');
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: #0f172a; 
+            color: #f8fafc; 
+            display: flex; 
+            justify-content: center; 
+            padding: 50px 20px; 
+            margin: 0;
+        }
+
+        .card { 
+            background: #1e293b; 
+            padding: 2.5rem; 
+            border-radius: 1.5rem; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); 
+            width: 100%; 
+            max-width: 450px; 
+            border: 1px solid #334155;
+        }
+
+        h1 { color: #38bdf8; margin: 0 0 1.5rem 0; font-weight: 700; letter-spacing: -0.025em; text-align: center; }
+
+        label { display: block; font-size: 0.85rem; color: #94a3b8; margin-bottom: 5px; font-weight: 600; }
+
+        select, input { 
+            width: 100%; padding: 12px; margin-bottom: 20px; 
+            border-radius: 8px; border: 1px solid #334155; 
+            background: #0f172a; color: white; font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        /* Unified Button Component */
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .btn-primary { background: #38bdf8; color: #0f172a; margin-bottom: 20px; }
+        .btn-primary:hover { background: #7dd3fc; transform: translateY(-2px); }
+
+        .btn-export { background: #10b981; color: white; margin-bottom: 10px; }
+        .btn-export:hover { background: #059669; transform: translateY(-2px); }
+
+        .btn-clear { background: transparent; color: #f43f5e; border: 1px solid #451a21; font-size: 0.85rem; padding: 10px; }
+        .btn-clear:hover { background: #451a21; border-color: #f43f5e; }
+
+        /* Table Styling */
+        table { width: 100%; margin-top: 25px; border-collapse: collapse; }
+        th { color: #94a3b8; font-size: 0.75rem; text-transform: uppercase; text-align: left; padding: 10px 5px; border-bottom: 2px solid #334155; }
+        td { padding: 12px 5px; border-bottom: 1px solid #334155; font-size: 0.95rem; }
+
+        .total-box { 
+            margin-top: 30px; padding-top: 20px;
+            border-top: 2px dashed #334155;
+            font-size: 1.5rem; color: #38bdf8; font-weight: 700; text-align: center; 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h1>Stock Portfolio Tracker</h1>
+        
+        <!-- Input Form -->
+        <form action="/add" method="POST">
+            <label>Select Asset</label>
+            <select name="symbol">
+                {% for symbol, price in stocks.items() %}
+                    <option value="{{ symbol }}">{{ symbol }} (${{ price }})</option>
+                {% endfor %}
+            </select>
+            
+            <label>Quantity owned</label>
+            <input type="number" name="quantity" min="1" required placeholder="e.g. 10">
+            
+            <button type="submit" class="btn btn-primary">Add to Portfolio</button>
+        </form>
+
+        <!-- Data Table -->
+        <table>
+            <thead>
+                <tr><th>Symbol</th><th>Qty</th><th>Subtotal</th></tr>
+            </thead>
+            <tbody>
+                {% for item in portfolio %}
+                <tr>
+                    <td style="font-weight: 600;">{{ item.Symbol }}</td>
+                    <td>{{ item.Quantity }}</td>
+                    <td style="color: #10b981;">${{ item.Total }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Summary & Actions -->
+        <div class="total-box">
+            Total: ${{ grand_total }}
+        </div>
+
+        <div style="margin-top: 25px;">
+            <a href="/export" class="btn btn-export">📥 Download CSV</a>
+            
+            <form action="/clear" method="POST">
+                <button type="submit" class="btn btn-clear">🗑️ Reset Portfolio</button>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>
