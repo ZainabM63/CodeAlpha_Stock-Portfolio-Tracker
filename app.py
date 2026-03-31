@@ -54,5 +54,11 @@ def export_csv():
     else:
         return "No data to export yet!", 404
 
+@app.route('/clear', methods=['POST'])
+def clear_portfolio():
+    if os.path.exists('portfolio.csv'):
+        os.remove('portfolio.csv')
+    return redirect('/')
+
 if __name__ == '__main__':
     app.run(debug=True)
